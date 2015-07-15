@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 
-namespace Semiodesk.Director.Configuration
+namespace Semiodesk.VirtuosoInstrumentation.Configuration
 {
     /// <summary>
     /// The SPARQL section sets parameters and limits for SPARQL query protocol web service service. This section should stay commented out as long as SPARQL is not in use.

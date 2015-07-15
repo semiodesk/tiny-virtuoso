@@ -78,7 +78,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\Semiodesk.Director\Semiodesk.Director.csproj">
+    <ProjectReference Include="..\Semiodesk.VirtuosoInstrumentation\Semiodesk.VirtuosoInstrumentation.csproj">
       <Project>{9bebbc7b-dae5-4686-8961-59d3860a9988}</Project>
       <Name>Semiodesk.Director</Name>
     </ProjectReference>

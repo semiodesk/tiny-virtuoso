@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Semiodesk.Director
+namespace Semiodesk.VirtuosoInstrumentation
 {
     public interface IProcessStarter
     {
@@ -19,7 +19,7 @@ namespace Semiodesk.Director
         #endregion
 
         #region Methods
-        bool Start(bool waitOnStartup = true);
+        bool Start(bool waitOnStartup = true, TimeSpan? timeout = null);
         bool Stop(bool force = false);
         #endregion
 

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace Semiodesk.Director
+namespace Semiodesk.VirtuosoInstrumentation
 {
     class NativeVirtuosoStarter : IProcessStarter
     {
@@ -58,7 +58,7 @@ namespace Semiodesk.Director
 
         #region Methods
 
-        public bool Start(bool waitOnStartup = true)
+        public bool Start(bool waitOnStartup = true, TimeSpan? timeout = null)
         {
 
             _process.StartInfo.FileName = Executable;
@@ -77,8 +77,19 @@ namespace Semiodesk.Director
 
             if (waitOnStartup)
             {
+                double time = 0;
+                if (timeout.HasValue)
+                    time = timeout.Value.TotalMilliseconds;
                 while (!_serverStartOccured)
+                {
                     Thread.Sleep(10);
+                    if (timeout.HasValue)
+                    {
+                        time -= 10;
+                        if (time <= 0)
+                            break;
+                    }
+                }
             }
             return true;
         }

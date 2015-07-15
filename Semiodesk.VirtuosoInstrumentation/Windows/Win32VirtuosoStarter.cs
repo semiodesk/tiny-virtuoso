@@ -3,11 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Microsoft.Win32.SafeHandles;
 
-namespace Semiodesk.Director.Windows
+namespace Semiodesk.VirtuosoInstrumentation.Windows
 {
     class Win32VirtuosoStarter : IProcessStarter
     {
@@ -49,44 +51,59 @@ namespace Semiodesk.Director.Windows
 
         private IntPtr _stdErrHandle;
         private Job _job;
-
+        SafeFileHandle safeHandle;
+        private StreamReader _standardError;
+        private int _targetPort;
         #endregion
 
         #region Constructor
-        public Win32VirtuosoStarter()
+        public Win32VirtuosoStarter(int targetPort)
         {
+            _targetPort = targetPort;
         }
         #endregion
 
         #region Methods
 
-        public bool Start(bool waitOnStartup = true)
+        public bool Start(bool waitOnStartup = true, TimeSpan? timeout = null)
         {
             _job = new Job();
             
             STARTUPINFO si = new STARTUPINFO();
-            si.wShowWindow = 1;
+            si.wShowWindow = 0;
 
-            //SECURITY_ATTRIBUTES sa = new SECURITY_ATTRIBUTES();
-            //sa.nLength = (uint)System.Runtime.InteropServices.Marshal.SizeOf(sa);
-            //sa.lpSecurityDescriptor = IntPtr.Zero;
-            //sa.bInheritHandle = true;
-
-            //Win32Process.CreatePipe(out _stdErrHandle,
-            //   out si.hStdOutput,
-            //   ref sa, 4096 );
 
             PROCESS_INFORMATION pi = new PROCESS_INFORMATION();
             bool success = Win32Process.CreateProcess(Executable, string.Format("{0} {1}", Executable, Parameter),
                 IntPtr.Zero, IntPtr.Zero, false,
                 ProcessCreationFlags.NORMAL_PRIORITY_CLASS | 
-                ProcessCreationFlags.CREATE_NEW_CONSOLE |
-                //ProcessCreationFlags.CREATE_NO_WINDOW |
+                ProcessCreationFlags.CREATE_NO_WINDOW |
+                ProcessCreationFlags.STARTF_USESTDHANDLES |
                 ProcessCreationFlags.CREATE_BREAKAWAY_FROM_JOB,
                 IntPtr.Zero, null, ref si, out pi);
 
             _job.AddProcess(pi.hProcess);
-            
+
+            if (success && waitOnStartup)
+            {
+                double time = 0;
+                if (timeout.HasValue)
+                    time = timeout.Value.TotalMilliseconds;
+                while (!_serverStartOccured)
+                {
+                    _serverStartOccured = !Util.TestPortOpen(_targetPort);
+                    if (!_serverStartOccured)
+                    {
+                        Thread.Sleep(10);
+                        if (timeout.HasValue)
+                        {
+                            time -= 10;
+                            if (time <= 0)
+                                break;
+                        }
+                    }
+                }               
+            }
             
             return success;
             
@@ -96,11 +113,7 @@ namespace Semiodesk.Director.Windows
         void _process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
             string error = e.Data;
-            if (!_serverStartOccured && !string.IsNullOrEmpty(error))
-            {
-                if (error.Contains("Server online at"))
-                    _serverStartOccured = true;
-            }
+            
         }
 
 

@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Semiodesk.Director", "Semiodesk.Director\Semiodesk.Director.csproj", "{9BEBBC7B-DAE5-4686-8961-59D3860A9988}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Semiodesk.VirtuosoInstrumentation", "Semiodesk.VirtuosoInstrumentation\Semiodesk.VirtuosoInstrumentation.csproj", "{9BEBBC7B-DAE5-4686-8961-59D3860A9988}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Semiodesk.Director.Test", "Semiodesk.Director.Test\Semiodesk.Director.Test.csproj", "{9C74ADE1-F655-4B4C-857E-37A4208E8141}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Semiodesk.TinyVirtuoso.Test", "Semiodesk.TinyVirtuoso.Test\Semiodesk.TinyVirtuoso.Test.csproj", "{9C74ADE1-F655-4B4C-857E-37A4208E8141}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CtrlCSender", "CtrlCSender\CtrlCSender.csproj", "{976DF288-AF39-44AD-B18E-B3C1A6593E3F}"
 EndProject

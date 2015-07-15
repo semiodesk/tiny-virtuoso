@@ -7,8 +7,8 @@
     <ProjectGuid>{9BEBBC7B-DAE5-4686-8961-59D3860A9988}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Semiodesk.Director</RootNamespace>
-    <AssemblyName>Semiodesk.Director</AssemblyName>
+    <RootNamespace>Semiodesk.VirtuosoInstrumentation</RootNamespace>
+    <AssemblyName>Semiodesk.VirtuosoInstrumentation</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

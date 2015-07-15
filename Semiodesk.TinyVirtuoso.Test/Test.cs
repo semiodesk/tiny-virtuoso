@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
-namespace Semiodesk.Director.Test
+namespace Semiodesk.VirtuosoInstrumentation.Test
 {
     [TestFixture]
     public class Test

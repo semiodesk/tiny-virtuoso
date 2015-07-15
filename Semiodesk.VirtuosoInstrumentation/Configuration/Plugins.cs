@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Semiodesk.Director.Configuration
+namespace Semiodesk.VirtuosoInstrumentation.Configuration
 {
     public class Plugins
     {

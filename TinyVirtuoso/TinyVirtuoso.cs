@@ -1,4 +1,4 @@
-﻿using Semiodesk.Director;
+﻿using Semiodesk.VirtuosoInstrumentation;
 using Semiodesk.TinyVirtuoso.Utils;
 using System;
 using System.Collections.Generic;
@@ -150,23 +150,28 @@ namespace Semiodesk.TinyVirtuoso
         {
             Virtuoso v = _instances[dbName];
 
-            var port = v.Configuration.Parameters.ServerPort;
-            var res = port.Split(':');
-            if (res.Count() > 1)
-                port = res[1];
-            else
-                port = res[0];
+            int? port = Util.GetPort(v.Configuration.Parameters.ServerPort);
 
             return string.Format("provider=virtuoso;host=localhost;port={0};uid={1};pw={2}",port, username, password );
         }
 
-        public void Start(string instanceName = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="instanceName"></param>
+        /// <param name="waitForStartup"></param>
+        /// <param name="timeout">Timeout in milliseconds.</param>
+        /// <returns></returns>
+        public bool Start(string instanceName = null, bool waitForStartup = true, int timeout = -1)
         {
             if (string.IsNullOrEmpty(instanceName))
                 instanceName = DefaultInstance;
 
             Virtuoso v = _instances[instanceName];
-            v.Start();
+            TimeSpan? timespan = null;
+            if (timeout > 0)
+                timespan = TimeSpan.FromMilliseconds(timeout);
+            return v.Start(waitForStartup, timespan);
         }
 
         public void Stop(string instanceName = null)

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 
 
-namespace Semiodesk.Director.Configuration
+namespace Semiodesk.VirtuosoInstrumentation.Configuration
 {
     /// <summary>
     /// Taken from http://docs.openlinksw.com/virtuoso/databaseadmsrv.html

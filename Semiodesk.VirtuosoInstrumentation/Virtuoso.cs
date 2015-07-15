@@ -1,4 +1,4 @@
-﻿using Semiodesk.Director.Configuration;
+﻿using Semiodesk.VirtuosoInstrumentation.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,10 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using Semiodesk.Director.Windows;
+using Semiodesk.VirtuosoInstrumentation.Windows;
 
 
-namespace Semiodesk.Director
+namespace Semiodesk.VirtuosoInstrumentation
 {
     public class Virtuoso : IDisposable
     {
@@ -53,20 +53,26 @@ namespace Semiodesk.Director
         /// <summary>
         /// Starts the 
         /// </summary>
-        public void Start(bool waitOnStartup = true)
+        public bool Start(bool waitOnStartup = true, TimeSpan? timeout = null)
         {
+            bool res = false;
             _config.Locked = true;
             if (_starter == null)
             {
+                int? port = Util.GetPort(_config.Parameters.ServerPort);
+                if (!port.HasValue)
+                    throw new ArgumentException("No valid port given.");
+
 #if WINDOWS
-                _starter = new Win32VirtuosoStarter();
+                _starter = new Win32VirtuosoStarter(port.Value);
 #else
                 _starter = new NativeVirtuosoStarter();
 #endif
                 _starter.Executable = _binary.FullName;
                 _starter.Parameter = string.Format("-f -c {0}", _configFile.FullName);
-                _starter.Start(waitOnStartup);
+                res = _starter.Start(waitOnStartup, timeout);
             }
+            return res;
         }
 
         public void Stop(bool force = false)

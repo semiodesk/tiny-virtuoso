@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Semiodesk.Director.Windows
+namespace Semiodesk.VirtuosoInstrumentation.Windows
 {
     public struct STARTUPINFO
     {
@@ -57,7 +57,8 @@ namespace Semiodesk.Director.Windows
         DEBUG_PROCESS = 0x00000001,
         DETACHED_PROCESS = 0x00000008,
         EXTENDED_STARTUPINFO_PRESENT = 0x00080000,
-        INHERIT_PARENT_AFFINITY = 0x00010000
+        INHERIT_PARENT_AFFINITY = 0x00010000,
+        STARTF_USESTDHANDLES = 0x00000100
     }
 
     public static class Win32Process
