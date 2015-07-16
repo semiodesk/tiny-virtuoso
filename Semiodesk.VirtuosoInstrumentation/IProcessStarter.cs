@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -20,7 +21,7 @@ namespace Semiodesk.VirtuosoInstrumentation
 
         #region Methods
         bool Start(bool waitOnStartup = true, TimeSpan? timeout = null);
-        bool Stop(bool force = false);
+        bool Stop(bool force = false, DirectoryInfo binDir = null);
         #endregion
 
     }

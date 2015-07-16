@@ -45,6 +45,9 @@
     <Compile Include="utils\PortUtils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="TinyVirtuoso\CtrlCSender.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="TinyVirtuoso\isql.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

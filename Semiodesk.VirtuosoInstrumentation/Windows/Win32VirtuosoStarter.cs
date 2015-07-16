@@ -83,6 +83,7 @@ namespace Semiodesk.VirtuosoInstrumentation.Windows
                 IntPtr.Zero, null, ref si, out pi);
 
             _job.AddProcess(pi.hProcess);
+            _process = Process.GetProcessById((int)pi.dwProcessId);
 
             if (success && waitOnStartup)
             {
@@ -105,24 +106,19 @@ namespace Semiodesk.VirtuosoInstrumentation.Windows
                 }               
             }
             
+
+
             return success;
             
         }
 
 
-        void _process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            string error = e.Data;
-            
-        }
-
-
-        public bool Stop(bool force = false)
+        public bool Stop(bool force = false, DirectoryInfo binDir = null)
         {
             bool res = true;
             if (ProcessRunning)
             {
-                Util.SendCtrlC(_process.Id);
+                Util.SendCtrlC(_process.Id, binDir);
                 if (!_process.WaitForExit(1000) && force)
                 {
                     try

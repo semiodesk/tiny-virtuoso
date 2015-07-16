@@ -17,6 +17,8 @@ namespace Semiodesk.VirtuosoInstrumentation
         FileInfo _binary;
         FileInfo _configFile;
         VirtuosoConfig _config;
+       
+        public DirectoryInfo EnvironmentDir { get; set; }
 
         IProcessStarter _starter;
 
@@ -78,7 +80,7 @@ namespace Semiodesk.VirtuosoInstrumentation
         public void Stop(bool force = false)
         {
             if( _starter != null )
-                _starter.Stop(force);
+                _starter.Stop(force, EnvironmentDir);
             if( _config != null )
                 _config.Locked = false;
         }

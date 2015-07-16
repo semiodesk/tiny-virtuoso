@@ -41,6 +41,8 @@ namespace Semiodesk.TinyVirtuoso
         FileInfo _executable;
 
         Random _rnd = new Random(DateTime.Now.Millisecond);
+
+        public DirectoryInfo TargetBinPath { get; private set; }
         #endregion
 
         #region Constructor
@@ -53,6 +55,7 @@ namespace Semiodesk.TinyVirtuoso
 
             RootDir = GetRootDir(rootDir);
             CurrentDir = GetCurrentDir();
+            TargetBinPath = GetTargetBinPath();
 
             if (!CheckVirtuoso())
                 SetupVirtuoso();
@@ -102,6 +105,11 @@ namespace Semiodesk.TinyVirtuoso
             return conf;
         }
 
+        private DirectoryInfo GetTargetBinPath()
+        {
+            return new DirectoryInfo(Path.Combine(RootDir.FullName, "virtuoso"));
+        }
+
         private DirectoryInfo GetInstanceCollectionDir()
         {
             var instanceCollectionDir = new DirectoryInfo(Path.Combine(RootDir.FullName, "databases"));
@@ -110,22 +118,34 @@ namespace Semiodesk.TinyVirtuoso
 
         void SetupVirtuoso()
         {
-            DirectoryInfo targetPath = new DirectoryInfo(Path.Combine(RootDir.FullName, "virtuoso"));
             DirectoryInfo sourcePath = CurrentDir;
 
-            if( targetPath.Exists )
-                targetPath.Delete(true);
+            if (TargetBinPath.Exists)
+                TargetBinPath.Delete(true);
 
-            DirectoryUtils.DirectoryCopy(sourcePath.FullName, targetPath.FullName, true);
+            DirectoryUtils.DirectoryCopy(sourcePath.FullName, TargetBinPath.FullName, true);
             CheckVirtuoso();
         }
 
         bool CheckVirtuoso()
         {
-            string path = Path.Combine(RootDir.FullName, "virtuoso");
-            path = Path.Combine(path, "virtuoso-t.exe");
-            _executable = new FileInfo(path);
-            return _executable.Exists;
+            DirectoryInfo sourcePath = CurrentDir;
+            int charCount = sourcePath.FullName.Count() + 1;
+
+            foreach (var x in sourcePath.GetFiles("*.*", SearchOption.AllDirectories))
+            {
+                string rel = x.FullName.Remove(0, charCount);
+                FileInfo f = new FileInfo(Path.Combine(TargetBinPath.FullName, rel));
+                if (!f.Exists)
+                    return false;
+
+                if (f.Name == "virtuoso-t.exe")
+                {
+                    _executable = f;
+                }
+            }
+
+            return true;
         }
 
         void LoadExistingInstances()
@@ -146,13 +166,25 @@ namespace Semiodesk.TinyVirtuoso
             return GetConnectionString(DefaultInstance, username, password);
         }
 
-        public string GetConnectionString(string dbName, string username, string password)
+        public string GetConnectionString(string instanceName, string username, string password)
         {
-            Virtuoso v = _instances[dbName];
+            Virtuoso v = _instances[instanceName];
 
             int? port = Util.GetPort(v.Configuration.Parameters.ServerPort);
 
             return string.Format("provider=virtuoso;host=localhost;port={0};uid={1};pw={2}",port, username, password );
+        }
+
+        public string GetOdbcConnectionString(string username, string password)
+        {
+            return GetOdbcConnectionString(DefaultInstance, username, password);
+        }
+
+        public string GetOdbcConnectionString(string instanceName, string username, string password)
+        {
+            Virtuoso v = _instances[instanceName];
+            int? port = Util.GetPort(v.Configuration.Parameters.ServerPort);
+            return "Server=localhost:" + port + ";uid=" + username + ";pwd=" + password + ";Charset=utf-8";
         }
 
         /// <summary>
@@ -189,7 +221,7 @@ namespace Semiodesk.TinyVirtuoso
             FileInfo targetConfig = new FileInfo(Path.Combine(instanceDir.FullName, "virtuoso.ini"));
 
             Virtuoso virt = new Virtuoso(_executable, targetConfig);
-
+            virt.EnvironmentDir = TargetBinPath;
             int port;
             do
             {
@@ -198,6 +230,8 @@ namespace Semiodesk.TinyVirtuoso
 
             virt.Configuration.Parameters.ServerPort = string.Format("localhost:{0}", port);
             virt.Configuration.SaveConfigFile();
+
+            virt.EnvironmentDir = TargetBinPath;
             _instances.Add(dbName, virt);
             
         }

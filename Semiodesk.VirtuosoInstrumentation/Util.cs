@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
@@ -9,11 +10,17 @@ namespace Semiodesk.VirtuosoInstrumentation
 {
     public class Util
     {
-        public static bool SendCtrlC(int pid)
+        public static bool SendCtrlC(int pid, DirectoryInfo senderBinDir = null)
         {
             var process = new Process();
+            string binName =  "CtrlCSender.exe";
+            FileInfo sender;
+            if( senderBinDir == null )
+                sender = new FileInfo(binName);
+            else
+                sender = new FileInfo(Path.Combine(senderBinDir.FullName, binName));
 
-            process.StartInfo.FileName = "CtrlCSender.exe";
+            process.StartInfo.FileName = sender.FullName;
             process.StartInfo.Arguments = pid.ToString();
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.CreateNoWindow = true;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -110,12 +111,12 @@ namespace Semiodesk.VirtuosoInstrumentation
             string res = e.Data;
         }
 
-        public bool Stop(bool force = false)
+        public bool Stop(bool force = false, DirectoryInfo binDir = null)
         {
             bool res = true;
             if (ProcessRunning)
             {
-                Util.SendCtrlC(_process.Id);
+                Util.SendCtrlC(_process.Id, binDir);
                 if (!_process.WaitForExit(1000) && force)
                 {
                     try
