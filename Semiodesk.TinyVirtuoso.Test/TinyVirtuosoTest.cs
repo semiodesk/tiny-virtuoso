@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Semiodesk.TinyVirtuoso;
-using Semiodesk.Trinity;
+
 
 namespace TinyVirtuosoTest
 {
@@ -18,7 +18,7 @@ namespace TinyVirtuosoTest
             TinyVirtuoso t = new TinyVirtuoso(defaultDatabase:"Test");
             t.Start();
 
-            var store = StoreFactory.CreateStore(t.GetConnectionString("dba", "dba"));
+            
 
 
 
