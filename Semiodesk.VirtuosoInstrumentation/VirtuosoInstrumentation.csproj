@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Semiodesk.VirtuosoInstrumentation</RootNamespace>
-    <AssemblyName>Semiodesk.VirtuosoInstrumentation</AssemblyName>
+    <AssemblyName>VirtuosoInstrumentation</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

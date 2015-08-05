@@ -15,22 +15,12 @@ namespace TinyVirtuosoTest
         [Test]
         public void TinyTest()
         {
-            TinyVirtuoso t = new TinyVirtuoso(defaultDatabase:"Test");
-            t.Start();
+            TinyVirtuoso t = new TinyVirtuoso();
+            string instanceName = "Test";
+            t.CreateInstance(instanceName);
+            t.Start(instanceName);
 
-            
-
-
-
-            //IModel m;
-            //Uri modelUri = new Uri("http://semiodesk.com/tinyVirtuosTest");
-            //if (store.ContainsModel(modelUri))
-            //    m = store.GetModel(modelUri);
-            //else
-            //    m = store.CreateModel(modelUri);
-
-
-            t.Stop();
+            t.Stop(instanceName);
             
         }
 

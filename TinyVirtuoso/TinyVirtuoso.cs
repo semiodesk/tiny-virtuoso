@@ -1,4 +1,32 @@
-﻿using Semiodesk.VirtuosoInstrumentation;
+﻿// LICENSE:
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
+// AUTHORS:
+//
+//  Moritz Eberl <moritz@semiodesk.com>
+//  Sebastian Faubel <sebastian@semiodesk.com>
+//
+// Copyright (c) Semiodesk GmbH 2015
+
+
+using Semiodesk.VirtuosoInstrumentation;
 using Semiodesk.TinyVirtuoso.Utils;
 using System;
 using System.Collections.Generic;
@@ -14,8 +42,6 @@ namespace Semiodesk.TinyVirtuoso
         #region Members
 
         public IEnumerable<string> AvailableInstances { get { return _instances.Keys; } }
-
-        public string DefaultInstance { get; set; }
 
         protected Dictionary<string, Virtuoso> _instances = new Dictionary<string, Virtuoso>();
 
@@ -50,9 +76,8 @@ namespace Semiodesk.TinyVirtuoso
         /// Creates a new TinyVirtuoso.
         /// </summary>
         /// <param name="rootDir">Tells TinyVirtuoso where to store the databases, if the directory already contains databases these are made available. If no directory is given, one is created in the ApplicationData folder.</param>
-        public TinyVirtuoso(DirectoryInfo rootDir = null, string defaultDatabase = null)
+        public TinyVirtuoso(DirectoryInfo rootDir = null)
         {
-
             RootDir = GetRootDir(rootDir);
             CurrentDir = GetCurrentDir();
             TargetBinPath = GetTargetBinPath();
@@ -67,14 +92,77 @@ namespace Semiodesk.TinyVirtuoso
                 LoadExistingInstances();
 
             _templateConfig = GetTemplateConfig();
-
-            DefaultInstance = defaultDatabase;
         }
 
         #endregion
 
         #region Methods
+        #region Public Interface
+        public string GetConnectionString(string instanceName, string username, string password)
+        {
+            Virtuoso v = _instances[instanceName];
 
+            int? port = Util.GetPort(v.Configuration.Parameters.ServerPort);
+
+            return string.Format("provider=virtuoso;host=localhost;port={0};uid={1};pw={2}", port, username, password);
+        }
+
+        public string GetOdbcConnectionString(string instanceName, string username, string password)
+        {
+            Virtuoso v = _instances[instanceName];
+            int? port = Util.GetPort(v.Configuration.Parameters.ServerPort);
+            return "Server=localhost:" + port + ";uid=" + username + ";pwd=" + password + ";Charset=utf-8";
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="instanceName"></param>
+        /// <param name="waitForStartup"></param>
+        /// <param name="timeout">Timeout in milliseconds.</param>
+        /// <returns></returns>
+        public bool Start(string instanceName, bool waitForStartup = true, int timeout = -1)
+        {
+            if (string.IsNullOrEmpty(instanceName) || !_instances.ContainsKey(instanceName))
+                throw new ArgumentException(string.Format("No instance with key {0} found", instanceName));
+
+            Virtuoso v = _instances[instanceName];
+            TimeSpan? timespan = null;
+            if (timeout > 0)
+                timespan = TimeSpan.FromMilliseconds(timeout);
+            return v.Start(waitForStartup, timespan);
+        }
+
+        public void Stop(string instanceName)
+        {
+            if (string.IsNullOrEmpty(instanceName) || !_instances.ContainsKey(instanceName))
+                throw new ArgumentException(string.Format("No instance with key {0} found", instanceName));
+
+            Virtuoso v = _instances[instanceName];
+            v.Stop();
+        }
+
+        public void CreateInstance(string instanceName)
+        {
+            DirectoryInfo databaseDir = new DirectoryInfo(Path.Combine(InstanceCollectionDir.FullName, instanceName));
+            if (databaseDir.Exists)
+                throw new ArgumentException(string.Format("A database with the given name {0} exists already.", instanceName));
+
+            databaseDir.Create();
+            FileInfo targetConfig = new FileInfo(Path.Combine(databaseDir.FullName, "virtuoso.ini"));
+            _templateConfig.CopyTo(targetConfig.FullName);
+
+            InitInstance(databaseDir);
+        }
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rootDir"></param>
+        /// <returns></returns>
         private DirectoryInfo GetRootDir(DirectoryInfo rootDir = null)
         {
             if (rootDir == null)
@@ -116,7 +204,7 @@ namespace Semiodesk.TinyVirtuoso
             return instanceCollectionDir;
         }
 
-        void SetupVirtuoso()
+        private void SetupVirtuoso()
         {
             DirectoryInfo sourcePath = CurrentDir;
 
@@ -127,7 +215,7 @@ namespace Semiodesk.TinyVirtuoso
             CheckVirtuoso();
         }
 
-        bool CheckVirtuoso()
+        private bool CheckVirtuoso()
         {
             DirectoryInfo sourcePath = CurrentDir;
             int charCount = sourcePath.FullName.Count() + 1;
@@ -148,71 +236,12 @@ namespace Semiodesk.TinyVirtuoso
             return true;
         }
 
-        void LoadExistingInstances()
+        private void LoadExistingInstances()
         {
             foreach (var db in InstanceCollectionDir.GetDirectories())
             {
                 InitInstance(db);
             }
-        }
-
-        public void RenameInstance(string oldName, string newName)
-        {
-
-        }
-
-        public string GetConnectionString(string username, string password)
-        {
-            return GetConnectionString(DefaultInstance, username, password);
-        }
-
-        public string GetConnectionString(string instanceName, string username, string password)
-        {
-            Virtuoso v = _instances[instanceName];
-
-            int? port = Util.GetPort(v.Configuration.Parameters.ServerPort);
-
-            return string.Format("provider=virtuoso;host=localhost;port={0};uid={1};pw={2}",port, username, password );
-        }
-
-        public string GetOdbcConnectionString(string username, string password)
-        {
-            return GetOdbcConnectionString(DefaultInstance, username, password);
-        }
-
-        public string GetOdbcConnectionString(string instanceName, string username, string password)
-        {
-            Virtuoso v = _instances[instanceName];
-            int? port = Util.GetPort(v.Configuration.Parameters.ServerPort);
-            return "Server=localhost:" + port + ";uid=" + username + ";pwd=" + password + ";Charset=utf-8";
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="instanceName"></param>
-        /// <param name="waitForStartup"></param>
-        /// <param name="timeout">Timeout in milliseconds.</param>
-        /// <returns></returns>
-        public bool Start(string instanceName = null, bool waitForStartup = true, int timeout = -1)
-        {
-            if (string.IsNullOrEmpty(instanceName))
-                instanceName = DefaultInstance;
-
-            Virtuoso v = _instances[instanceName];
-            TimeSpan? timespan = null;
-            if (timeout > 0)
-                timespan = TimeSpan.FromMilliseconds(timeout);
-            return v.Start(waitForStartup, timespan);
-        }
-
-        public void Stop(string instanceName = null)
-        {
-            if (string.IsNullOrEmpty(instanceName))
-                instanceName = DefaultInstance;
-
-            Virtuoso v = _instances[instanceName];
-            v.Stop();
         }
 
         private void InitInstance(DirectoryInfo instanceDir)
@@ -233,37 +262,10 @@ namespace Semiodesk.TinyVirtuoso
 
             virt.EnvironmentDir = TargetBinPath;
             _instances.Add(dbName, virt);
-            
-        }
-
-        public void CreateInstance(string instanceName=null)
-        {
-            if (string.IsNullOrEmpty(instanceName))
-                instanceName = Guid.NewGuid().ToString();
-
-            DirectoryInfo databaseDir = new DirectoryInfo(Path.Combine(InstanceCollectionDir.FullName, instanceName));
-            if (databaseDir.Exists)
-                throw new ArgumentException(string.Format("A database with the given name {0} exists already.", instanceName));
-
-            databaseDir.Create();
-            FileInfo targetConfig = new FileInfo(Path.Combine(databaseDir.FullName, "virtuoso.ini"));
-            _templateConfig.CopyTo(targetConfig.FullName);
-
-            InitInstance(databaseDir);
-            
-            if (DefaultInstance == null)
-                DefaultInstance = instanceName;
 
         }
+        #endregion
 
-        public void SaveDatabase(DirectoryInfo dir, string fileName=null, string extension="zip")
-        {
-        }
-
-        public void LoadDatabase(FileInfo dbFile)
-        {
-
-        }
         #endregion
     }
 }
