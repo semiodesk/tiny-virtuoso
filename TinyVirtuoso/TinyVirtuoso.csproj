@@ -48,12 +48,6 @@
     <Content Include="TinyVirtuoso\CtrlCSender.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="TinyVirtuoso\isql.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TinyVirtuoso\virtuoso-t.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="TinyVirtuoso\database\virtuoso.ini">
@@ -66,11 +60,23 @@
     <None Include="TinyVirtuoso\doc\NEWS" />
     <None Include="TinyVirtuoso\doc\README" />
     <None Include="TinyVirtuoso\doc\README.GIT" />
+    <None Include="TinyVirtuoso\osx\isql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TinyVirtuoso\osx\virtuoso-t">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TinyVirtuoso\win\isql.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TinyVirtuoso\win\virtuoso-t.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Semiodesk.VirtuosoInstrumentation\VirtuosoInstrumentation.csproj">
-      <Project>{9bebbc7b-dae5-4686-8961-59d3860a9988}</Project>
+      <Project>{9BEBBC7B-DAE5-4686-8961-59D3860A9988}</Project>
       <Name>VirtuosoInstrumentation</Name>
     </ProjectReference>
   </ItemGroup>
@@ -82,4 +88,8 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="TinyVirtuoso\osx\" />
+    <Folder Include="TinyVirtuoso\win\" />
+  </ItemGroup>
 </Project>

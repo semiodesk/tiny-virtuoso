@@ -77,15 +77,17 @@ namespace Semiodesk.VirtuosoInstrumentation
         }
 
         public DirectoryInfo _binDir;
+        public DirectoryInfo _workingDir;
 
         #endregion
 
         #region Constructor
-        public NativeVirtuosoStarter(DirectoryInfo binDir = null)
+        public NativeVirtuosoStarter(DirectoryInfo binDir = null, DirectoryInfo workingDir = null)
         {
             _process = new Process();
 
             _binDir = binDir;
+            _workingDir = workingDir;
             
         }
         #endregion
@@ -95,6 +97,7 @@ namespace Semiodesk.VirtuosoInstrumentation
         public bool Start(bool waitOnStartup = true, TimeSpan? timeout = null)
         {
             _process.StartInfo.FileName = Executable;
+            _process.StartInfo.WorkingDirectory = _workingDir.FullName;
             _process.StartInfo.Arguments = Parameter;
             _process.StartInfo.RedirectStandardOutput = true;
             _process.StartInfo.RedirectStandardInput = true;
@@ -105,6 +108,7 @@ namespace Semiodesk.VirtuosoInstrumentation
 
             //_process.OutputDataReceived += _process_OutputDataReceived;
             _process.Start();
+
             //_process.BeginOutputReadLine();
             _process.BeginErrorReadLine();
 
@@ -148,14 +152,15 @@ namespace Semiodesk.VirtuosoInstrumentation
             bool res = true;
             if (ProcessRunning)
             {
-                Util.SendCtrlC(_process.Id, _binDir);
+                SendSigint(_process.Id);
+                //Util.SendCtrlC(_process.Id, _binDir);
                 if (!_process.WaitForExit(1000) && force)
                 {
                     try
                     {
                         _process.Kill();
                     }
-                    catch (InvalidOperationException e)
+                    catch (InvalidOperationException)
                     {
                         res= false;
                     }
@@ -168,6 +173,15 @@ namespace Semiodesk.VirtuosoInstrumentation
 
             }
             return res;
+        }
+
+        private void SendSigint(int pid)
+        {
+            Process proc = new Process();
+            proc.StartInfo.FileName = "kill";
+            proc.StartInfo.Arguments = string.Format("-SIGINT {0}", pid);
+            proc.Start();
+            proc.WaitForExit();
         }
 
         #endregion

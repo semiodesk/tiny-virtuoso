@@ -92,11 +92,11 @@ namespace Semiodesk.VirtuosoInstrumentation
                 if (!port.HasValue)
                     throw new ArgumentException("No valid port given.");
 
-#if WINDOWS
-                _starter = new Win32VirtuosoStarter(port.Value, EnvironmentDir);
-#else
-                _starter = new NativeVirtuosoStarter();
-#endif
+                if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
+                    _starter = new NativeVirtuosoStarter(workingDir: _configFile.Directory);
+                else
+                    _starter = new Win32VirtuosoStarter(port.Value, EnvironmentDir);
+
                 _starter.Executable = _binary.FullName;
                 _starter.Parameter = string.Format("-f -c {0}", _configFile.FullName);
                 res = _starter.Start(waitOnStartup, timeout);

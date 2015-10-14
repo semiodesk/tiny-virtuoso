@@ -1,0 +1,11 @@
+
+How to build Virtuoso:
+
+Mac OS X:
+
+Install openssl with homebrew
+Create a link /usr/local/openssl to installed library
+ln -s /usr/local/opt/openssl /usr/local/openssl
+
+./autgen.sh
+./configure --disable-openldap --disable-bz2 --enable-openssl=/usr/local/openssl

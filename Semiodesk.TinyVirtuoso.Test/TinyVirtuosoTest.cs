@@ -16,9 +16,13 @@ namespace TinyVirtuosoTest
         public void TinyTest()
         {
             TinyVirtuoso t = new TinyVirtuoso();
+
             string instanceName = "Test";
-            t.CreateInstance(instanceName);
+
+            if( !t.AvailableInstances.Contains(instanceName) )
+              t.CreateInstance(instanceName);
             t.Start(instanceName);
+
 
             t.Stop(instanceName);
             

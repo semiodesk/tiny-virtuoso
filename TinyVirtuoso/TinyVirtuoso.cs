@@ -66,6 +66,8 @@ namespace Semiodesk.TinyVirtuoso
 
         FileInfo _executable;
 
+		string execName;
+
         Random _rnd = new Random(DateTime.Now.Millisecond);
 
         public DirectoryInfo TargetBinPath { get; private set; }
@@ -78,6 +80,11 @@ namespace Semiodesk.TinyVirtuoso
         /// <param name="rootDir">Tells TinyVirtuoso where to store the databases, if the directory already contains databases these are made available. If no directory is given, one is created in the ApplicationData folder.</param>
         public TinyVirtuoso(DirectoryInfo rootDir = null)
         {
+			if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
+				execName = "virtuoso-t";
+			else
+				execName = "virtuoso-t.exe";
+			
             RootDir = GetRootDir(rootDir);
             CurrentDir = GetCurrentDir();
             TargetBinPath = GetTargetBinPath();
@@ -227,7 +234,7 @@ namespace Semiodesk.TinyVirtuoso
                 if (!f.Exists)
                     return false;
 
-                if (f.Name == "virtuoso-t.exe")
+				if (f.Name == execName)
                 {
                     _executable = f;
                 }
@@ -254,7 +261,7 @@ namespace Semiodesk.TinyVirtuoso
             int port;
             do
             {
-                port = 1200 + _rnd.Next(10, 60);
+                port = 35000 + _rnd.Next(10, 60);
             } while (!PortUtils.TestPort(port));
 
             virt.Configuration.Parameters.ServerPort = string.Format("localhost:{0}", port);

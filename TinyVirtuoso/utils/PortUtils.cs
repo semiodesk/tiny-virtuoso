@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Net.Sockets;
 
 namespace Semiodesk.TinyVirtuoso.Utils
 {
@@ -37,18 +38,45 @@ namespace Semiodesk.TinyVirtuoso.Utils
     {
         public static bool TestPort(int port)
         {
-            IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
-            TcpConnectionInformation[] tcpConnInfoArray = ipGlobalProperties.GetActiveTcpConnections();
-
-            foreach (TcpConnectionInformation tcpi in tcpConnInfoArray)
-            {
-                if (tcpi.LocalEndPoint.Port == port)
-                {
-                    return false;
-                    break;
-                }
-            }
-            return true;
+			if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
+				return TryConnect(port);
+			else
+				return SearchPort(port);
         }
+
+		public static bool SearchPort(int port)
+		{
+			IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
+			TcpConnectionInformation[] tcpConnInfoArray = ipGlobalProperties.GetActiveTcpConnections();
+
+			foreach (TcpConnectionInformation tcpi in tcpConnInfoArray)
+			{
+				if (tcpi.LocalEndPoint.Port == port)
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		public static bool TryConnect(int port)
+		{
+			bool result = false;
+			try
+			{
+				Socket socket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+				socket.Connect(new System.Net.IPAddress(new byte[] {127, 0, 0, 1}), port);
+				socket.Close();
+			}catch(SocketException ex) 
+			{
+				if (ex.ErrorCode == 10061)
+					result = true;
+				else
+					throw ex;
+			}
+			return result;
+
+		}
+
     }
 }
