@@ -62,10 +62,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Semiodesk.VirtuosoInstrumentation\VirtuosoInstrumentation.csproj">
-      <Project>{9BEBBC7B-DAE5-4686-8961-59D3860A9988}</Project>
-      <Name>VirtuosoInstrumentation</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TinyVirtuoso\TinyVirtuoso.csproj">
       <Project>{C76ECE81-77E2-47B5-819F-0F57684629DB}</Project>
       <Name>TinyVirtuoso</Name>

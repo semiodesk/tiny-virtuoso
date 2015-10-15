@@ -109,7 +109,7 @@ namespace Semiodesk.TinyVirtuoso
         {
             Virtuoso v = _instances[instanceName];
 
-            int? port = Util.GetPort(v.Configuration.Parameters.ServerPort);
+            int? port = PortUtils.GetPort(v.Configuration.Parameters.ServerPort);
 
             return string.Format("provider=virtuoso;host=localhost;port={0};uid={1};pw={2}", port, username, password);
         }
@@ -117,7 +117,7 @@ namespace Semiodesk.TinyVirtuoso
         public string GetOdbcConnectionString(string instanceName, string username, string password)
         {
             Virtuoso v = _instances[instanceName];
-            int? port = Util.GetPort(v.Configuration.Parameters.ServerPort);
+            int? port = PortUtils.GetPort(v.Configuration.Parameters.ServerPort);
             return "Server=localhost:" + port + ";uid=" + username + ";pwd=" + password + ";Charset=utf-8";
         }
 

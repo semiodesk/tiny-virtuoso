@@ -20,10 +20,14 @@ Features
 
 License
 =======
-The library and tools in this repository are all released under the terms of the `MIT license`_. 
+The TinyVirtuoso library in this repository is released under the terms of the `MIT license`_. 
 This means you can use it for every project you like, even commercial ones, as long as you keep the copyright header intact. 
 The source code, documentation and issue tracking can be found at our `bitbucket page`_. 
 If you like what we are doing and want to support us, please consider donating.
+
+The `OpenLink Virtuoso`_ database is released under the terms of the GPL (see TinyVirtuoso\Virtuoso\doc\LICENSE).
+TinyVirtuoso does not link against OpenLink Virtuoso in any way. It just provides a way to start, stop and configure the software.
+To download the source code of this software, check out the git repository at https://github.com/openlink/virtuoso-opensource/
 
 Dependencies
 ============
@@ -60,4 +64,4 @@ If you need help, contact us under `hello@semiodesk.com`_.
 .. _`OpenLink Virtuoso`: https://github.com/openlink/virtuoso-opensource
 .. _`First Steps`: https://bitbucket.org/semiodesk/tinyvirtuoso/wiki/FirstSteps
 .. _`contact us`:mailto:hello@semiodesk.com
-.. _`contact us`:hello@semiodesk.com
+.. _`hello@semiodesk.com`:mailto:hello@semiodesk.com

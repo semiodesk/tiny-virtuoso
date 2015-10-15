@@ -78,5 +78,20 @@ namespace Semiodesk.TinyVirtuoso.Utils
 
 		}
 
+        public static int? GetPort(string hostWithPort)
+        {
+            var port = hostWithPort;
+            var tmp = port.Split(':');
+            if (tmp.Count() > 1)
+                port = tmp[1];
+            else
+                port = tmp[0];
+            int res;
+            if (int.TryParse(port, out res))
+                return res;
+
+            return null;
+        }
+
     }
 }

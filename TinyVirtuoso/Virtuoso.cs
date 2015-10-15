@@ -34,6 +34,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Semiodesk.VirtuosoInstrumentation.Windows;
+using Semiodesk.TinyVirtuoso.Utils;
 
 
 namespace Semiodesk.VirtuosoInstrumentation
@@ -88,7 +89,7 @@ namespace Semiodesk.VirtuosoInstrumentation
             _config.Locked = true;
             if (_starter == null)
             {
-                int? port = Util.GetPort(_config.Parameters.ServerPort);
+                int? port = PortUtils.GetPort(_config.Parameters.ServerPort);
                 if (!port.HasValue)
                     throw new ArgumentException("No valid port given.");
 

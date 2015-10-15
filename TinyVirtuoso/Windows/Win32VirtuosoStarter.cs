@@ -25,7 +25,7 @@
 //
 // Copyright (c) Semiodesk GmbH 2015
 
-#if WINDOWS
+
 
 using System;
 using System.Collections.Generic;
@@ -35,6 +35,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Microsoft.Win32.SafeHandles;
+using Semiodesk.TinyVirtuoso.Utils;
 
 namespace Semiodesk.VirtuosoInstrumentation.Windows
 {
@@ -121,7 +122,7 @@ namespace Semiodesk.VirtuosoInstrumentation.Windows
                     time = timeout.Value.TotalMilliseconds;
                 while (!_serverStartOccured)
                 {
-                    _serverStartOccured = !Util.TestPortOpen(_targetPort);
+                    _serverStartOccured = !PortUtils.TestPort(_targetPort);
                     if (!_serverStartOccured)
                     {
                         Thread.Sleep(10);
@@ -167,4 +168,3 @@ namespace Semiodesk.VirtuosoInstrumentation.Windows
     }
 }
 
-#endif

@@ -25,7 +25,7 @@
 //
 // Copyright (c) Semiodesk GmbH 2015
 
-#if WINDOWS
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -111,5 +111,3 @@ namespace Semiodesk.VirtuosoInstrumentation.Windows
 
     }
 }
-
-#endif
