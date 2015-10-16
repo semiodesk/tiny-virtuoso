@@ -1,20 +1,20 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>TinyVirtuoso</id>
-	<version>0.2.0</version>
+    <id>TinyVirtuoso.osx</id>
+	<version>7.2.2</version>
     <authors>Semiodesk</authors>
     <owners>Semiodesk</owners>
 	<licenseUrl>https://bitbucket.org/semiodesk/tinyvirtuoso/wiki/License</licenseUrl>
     <projectUrl>https://bitbucket.org/semiodesk/tinyvirtuoso</projectUrl>
     <iconUrl>http://static.semiodesk.com/images/trinity_logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Semiodesk.TinyVirtuoso offers a small and easy to deploy solution for people who want to use OpenLink's Virtuoso database.</description>
+    <description>TinyVirtuoso offers a way to deploy OpenLink's Virtuoso database as a small package that can be started on demand. This package contains the OSX binaries of Virtuoso.</description>
     <releaseNotes>Initial release.</releaseNotes>
     <copyright>Copyright 2015 Semiodesk</copyright>
     <tags>RDF SPARQL Database Semantic Web Graph OpenLink Virtuoso</tags>
     <dependencies>
-      <dependency id="ini-parser" version="2.2.2" />
+      <dependency id="TinyVirtuoso" version="0.2.0" />
     </dependencies>
   </metadata>
 </package>

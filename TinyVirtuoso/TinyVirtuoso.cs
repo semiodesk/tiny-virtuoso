@@ -114,7 +114,7 @@ namespace Semiodesk.TinyVirtuoso
             return string.Format("provider=virtuoso;host=localhost;port={0};uid={1};pw={2}", port, username, password);
         }
 
-        public string GetOdbcConnectionString(string instanceName, string username, string password)
+        public string GetNativeConnectionString(string instanceName, string username, string password)
         {
             Virtuoso v = _instances[instanceName];
             int? port = PortUtils.GetPort(v.Configuration.Parameters.ServerPort);
@@ -175,11 +175,13 @@ namespace Semiodesk.TinyVirtuoso
             if (rootDir == null)
             {
                 rootDir = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), "TinyVirtuoso"));
-                if (!rootDir.Exists)
-                {
-                    rootDir.Create();
-                }
             }
+
+            if (!rootDir.Exists)
+            {
+                rootDir.Create();
+            }
+
             return rootDir;
         }
 
@@ -202,7 +204,7 @@ namespace Semiodesk.TinyVirtuoso
 
         private DirectoryInfo GetTargetBinPath()
         {
-            return new DirectoryInfo(Path.Combine(RootDir.FullName, "virtuoso"));
+            return new DirectoryInfo(Path.Combine(RootDir.FullName, "TinyVirtuoso"));
         }
 
         private DirectoryInfo GetInstanceCollectionDir()

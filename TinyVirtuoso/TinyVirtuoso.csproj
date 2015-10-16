@@ -63,45 +63,34 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Virtuoso\database\virtuoso.ini">
+    <None Include="TinyVirtuoso\database\virtuoso.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Virtuoso\doc\AUTHORS">
+    <None Include="TinyVirtuoso\virtuoso\doc\AUTHORS">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Virtuoso\doc\COPYING">
+    <None Include="TinyVirtuoso\virtuoso\doc\COPYING">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Virtuoso\doc\CREDITS">
+    <None Include="TinyVirtuoso\virtuoso\doc\CREDITS">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Virtuoso\doc\INSTALL">
+    <None Include="TinyVirtuoso\virtuoso\doc\INSTALL">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Virtuoso\doc\LICENSE">
+    <None Include="TinyVirtuoso\virtuoso\doc\LICENSE">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Virtuoso\doc\NEWS">
+    <None Include="TinyVirtuoso\virtuoso\doc\NEWS">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Virtuoso\doc\README">
+    <None Include="TinyVirtuoso\virtuoso\doc\README">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Virtuoso\osx\isql">
+    <None Include="TinyVirtuoso\virtuoso\osx\isql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Virtuoso\osx\virtuoso-t">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Virtuoso\win\CtrlCSender.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Virtuoso\win\isql.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Virtuoso\win\virtuoso-t.exe">
+    <None Include="TinyVirtuoso\virtuoso\osx\virtuoso-t">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -113,5 +102,15 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="TinyVirtuoso\virtuoso\win\CtrlCSender.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TinyVirtuoso\virtuoso\win\isql.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TinyVirtuoso\virtuoso\win\virtuoso-t.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

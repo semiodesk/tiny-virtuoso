@@ -96,7 +96,7 @@ namespace Semiodesk.VirtuosoInstrumentation
                 if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
                     _starter = new NativeVirtuosoStarter(workingDir: _configFile.Directory);
                 else
-                    _starter = new Win32VirtuosoStarter(port.Value, EnvironmentDir);
+                    _starter = new Win32VirtuosoStarter(port.Value, _binary.Directory);
 
                 _starter.Executable = _binary.FullName;
                 _starter.Parameter = string.Format("-f -c {0}", _configFile.FullName);
