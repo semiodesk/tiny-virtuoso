@@ -96,6 +96,8 @@ namespace Semiodesk.VirtuosoInstrumentation
 
         public bool Start(bool waitOnStartup = true, TimeSpan? timeout = null)
         {
+            SetExecutable();
+
             _process.StartInfo.FileName = Executable;
             _process.StartInfo.WorkingDirectory = _workingDir.FullName;
             _process.StartInfo.Arguments = Parameter;
@@ -180,6 +182,15 @@ namespace Semiodesk.VirtuosoInstrumentation
             Process proc = new Process();
             proc.StartInfo.FileName = "kill";
             proc.StartInfo.Arguments = string.Format("-SIGINT {0}", pid);
+            proc.Start();
+            proc.WaitForExit();
+        }
+
+        private void SetExecutable()
+        {
+            Process proc = new Process();
+            proc.StartInfo.FileName = "chmod";
+            proc.StartInfo.Arguments = string.Format("+x {0}", Executable);
             proc.Start();
             proc.WaitForExit();
         }
