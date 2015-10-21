@@ -13,7 +13,7 @@ If you have any questions, suggestions or just want to tell us in which projects
 
 Features
 ========
-- Full fledged RFD graph database in a tiny package
+- Full fledged RDF graph database in a tiny package
 - No installation required
 - Easy to configure
 
