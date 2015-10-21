@@ -35,9 +35,10 @@ using System.Text;
 using System.Threading;
 using Semiodesk.VirtuosoInstrumentation.Windows;
 using Semiodesk.TinyVirtuoso.Utils;
+using Semiodesk.VirtuosoInstrumentation;
 
 
-namespace Semiodesk.VirtuosoInstrumentation
+namespace Semiodesk.TinyVirtuoso
 {
     public class Virtuoso : IDisposable
     {
