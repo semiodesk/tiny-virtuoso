@@ -41,7 +41,8 @@ namespace Semiodesk.TinyVirtuoso
     {
         #region Members
 
-        public IEnumerable<string> AvailableInstances { get { return _instances.Keys; } }
+        public IEnumerable<Virtuoso> AvailableInstances { get { return _instances.Values; } }
+        public IEnumerable<string> AvailableInstanceNames { get { return _instances.Keys; } }
 
         protected Dictionary<string, Virtuoso> _instances = new Dictionary<string, Virtuoso>();
 
@@ -149,7 +150,7 @@ namespace Semiodesk.TinyVirtuoso
             v.Stop();
         }
 
-        public void CreateInstance(string instanceName)
+        public Virtuoso CreateInstance(string instanceName)
         {
             DirectoryInfo databaseDir = new DirectoryInfo(Path.Combine(InstanceCollectionDir.FullName, instanceName));
             if (databaseDir.Exists)
@@ -159,8 +160,26 @@ namespace Semiodesk.TinyVirtuoso
             FileInfo targetConfig = new FileInfo(Path.Combine(databaseDir.FullName, "virtuoso.ini"));
             _templateConfig.CopyTo(targetConfig.FullName);
 
-            InitInstance(databaseDir);
+            return InitInstance(databaseDir);
         }
+
+        public Virtuoso GetInstance(string instanceName)
+        {
+            if (_instances.ContainsKey(instanceName))
+                return _instances[instanceName];
+            else
+
+                return null;
+        }
+
+        public Virtuoso GetOrCreateInstance(string instanceName)
+        {
+            if (_instances.ContainsKey(instanceName))
+                return _instances[instanceName];
+            else
+                return CreateInstance(instanceName);
+        }
+    
         #endregion
 
         #region Private Methods
@@ -198,7 +217,7 @@ namespace Semiodesk.TinyVirtuoso
             path = Path.Combine(path, "virtuoso.ini");
             var conf = new FileInfo(path);
             if (!conf.Exists)
-                throw new FileNotFoundException("Database template file not found!", _templateConfig.FullName);
+                throw new FileNotFoundException("Database template file not found!", conf.FullName);
             return conf;
         }
 
@@ -253,7 +272,7 @@ namespace Semiodesk.TinyVirtuoso
             }
         }
 
-        private void InitInstance(DirectoryInfo instanceDir)
+        private Virtuoso InitInstance(DirectoryInfo instanceDir)
         {
             string dbName = instanceDir.Name;
             FileInfo targetConfig = new FileInfo(Path.Combine(instanceDir.FullName, "virtuoso.ini"));
@@ -272,6 +291,7 @@ namespace Semiodesk.TinyVirtuoso
             virt.EnvironmentDir = TargetBinPath;
             _instances.Add(dbName, virt);
 
+            return virt;
         }
         #endregion
 
