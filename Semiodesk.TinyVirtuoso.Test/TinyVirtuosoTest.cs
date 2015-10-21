@@ -21,12 +21,11 @@ namespace TinyVirtuosoTest
 
             string instanceName = "Test";
 
-            if( !t.AvailableInstances.Contains(instanceName) )
-              t.CreateInstance(instanceName);
-            t.Start(instanceName);
+            Virtuoso v = t.GetOrCreateInstance(instanceName);
+            v.Start();
 
 
-            t.Stop(instanceName);
+            v.Stop();
             
         }
 
@@ -44,9 +43,8 @@ namespace TinyVirtuosoTest
 
             string instanceName = "Test";
 
-            if (!t.AvailableInstances.Contains(instanceName))
-                t.CreateInstance(instanceName);
-            t.Start(instanceName);
+            Virtuoso virt = t.GetOrCreateInstance(instanceName);
+            virt.Start();
 
 
             t.Stop(instanceName);
