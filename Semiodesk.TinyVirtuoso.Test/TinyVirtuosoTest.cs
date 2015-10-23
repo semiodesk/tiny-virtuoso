@@ -17,13 +17,15 @@ namespace TinyVirtuosoTest
         [Test]
         public void TinyTest()
         {
-            TinyVirtuoso t = new TinyVirtuoso();
+            Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, "blub");
+            TinyVirtuoso t = new TinyVirtuoso("Data");
 
             string instanceName = "Test";
 
             Virtuoso v = t.GetOrCreateInstance(instanceName);
             v.Start();
 
+            v.GetAdoNetConnectionString();
 
             v.Stop();
             
@@ -32,12 +34,10 @@ namespace TinyVirtuosoTest
         [Test]
         public void DirectoryTest()
         {
-            Assembly asm = Assembly.GetExecutingAssembly();
-            DirectoryInfo dir = new FileInfo(asm.Location).Directory;
-
-            DirectoryInfo targetDir = new DirectoryInfo(Path.Combine(dir.FullName, "Testington"));
-            if (targetDir.Exists)
-                targetDir.Delete(true);
+            
+            DirectoryInfo targetDir = new DirectoryInfo("Data");
+            //if (targetDir.Exists)
+                //targetDir.Delete(true);
 
             TinyVirtuoso t = new TinyVirtuoso(targetDir);
 

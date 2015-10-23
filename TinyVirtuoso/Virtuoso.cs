@@ -47,7 +47,7 @@ namespace Semiodesk.TinyVirtuoso
         FileInfo _configFile;
         VirtuosoConfig _config;
        
-        public DirectoryInfo EnvironmentDir { get; set; }
+        internal DirectoryInfo EnvironmentDir { get; set; }
 
         IProcessStarter _starter;
 
@@ -69,6 +69,8 @@ namespace Semiodesk.TinyVirtuoso
         }
 
         public VirtuosoConfig Configuration { get { return _config; } }
+
+        public DirectoryInfo DataDirectory { get { return _configFile.Directory; } }
         #endregion
 
         #region Constructor
@@ -97,13 +99,26 @@ namespace Semiodesk.TinyVirtuoso
                 if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
                     _starter = new NativeVirtuosoStarter(workingDir: _configFile.Directory);
                 else
-                    _starter = new Win32VirtuosoStarter(port.Value, _binary.Directory);
+                    _starter = new Win32VirtuosoStarter(port.Value, _binary.Directory, _configFile.Directory);
 
                 _starter.Executable = _binary.FullName;
                 _starter.Parameter = string.Format("-f -c {0}", _configFile.FullName);
                 res = _starter.Start(waitOnStartup, timeout);
             }
             return res;
+        }
+
+        public string GetTrinityConnectionString(string username = "dba", string password = "dba")
+        {
+            int? port = PortUtils.GetPort(Configuration.Parameters.ServerPort);
+
+            return string.Format("provider=virtuoso;host=localhost;port={0};uid={1};pw={2}", port, username, password);
+        }
+
+        public string GetAdoNetConnectionString(string username = "dba", string password = "dba")
+        {
+            int? port = PortUtils.GetPort(Configuration.Parameters.ServerPort);
+            return "Server=localhost:" + port + ";uid=" + username + ";pwd=" + password + ";Charset=utf-8";
         }
 
         public void Stop(bool force = false)
@@ -140,6 +155,7 @@ namespace Semiodesk.TinyVirtuoso
                 throw new Exception("Virtuoso seems to be running still. Try to shut it down manually.");
             }
         }
+        
 
         protected void Dispose(bool disposing)
         {
