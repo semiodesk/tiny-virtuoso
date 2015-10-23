@@ -83,13 +83,15 @@ namespace Semiodesk.VirtuosoInstrumentation.Windows
         private StreamReader _standardError;
         private int _targetPort;
         private DirectoryInfo _binDir;
+        private DirectoryInfo _workingDir;
         #endregion
 
         #region Constructor
-        public Win32VirtuosoStarter(int targetPort, DirectoryInfo binDir = null )
+        public Win32VirtuosoStarter(int targetPort, DirectoryInfo binDir = null, DirectoryInfo workingDir = null)
         {
             _targetPort = targetPort;
             _binDir = binDir;
+            _workingDir = workingDir;
         }
         #endregion
 
@@ -110,7 +112,7 @@ namespace Semiodesk.VirtuosoInstrumentation.Windows
                 ProcessCreationFlags.CREATE_NO_WINDOW |
                 ProcessCreationFlags.STARTF_USESTDHANDLES |
                 ProcessCreationFlags.CREATE_BREAKAWAY_FROM_JOB,
-                IntPtr.Zero, null, ref si, out pi);
+                IntPtr.Zero, _workingDir.FullName, ref si, out pi);
 
             _job.AddProcess(pi.hProcess);
             _process = Process.GetProcessById((int)pi.dwProcessId);

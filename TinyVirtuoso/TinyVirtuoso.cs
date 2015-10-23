@@ -51,7 +51,7 @@ namespace Semiodesk.TinyVirtuoso
         /// <summary>
         /// Rootdirectory of TinyVirtuoso
         /// </summary>
-        public DirectoryInfo RootDir { get; private set; }
+        public DirectoryInfo DataDir { get; private set; }
 
         /// <summary>
         /// Directory of this assembly
@@ -75,38 +75,26 @@ namespace Semiodesk.TinyVirtuoso
         #endregion
 
         #region Constructor
+
+        public TinyVirtuoso(string dataDirName)
+        {
+            Initialize(new DirectoryInfo(dataDirName));
+        }
+
         /// <summary>
         /// Creates a new TinyVirtuoso.
         /// </summary>
-        /// <param name="rootDir">Tells TinyVirtuoso where to store the databases, if the directory already contains databases these are made available. If no directory is given, one is created in the ApplicationData folder.</param>
-        public TinyVirtuoso(DirectoryInfo rootDir = null)
+        /// <param name="dataDir">Tells TinyVirtuoso where to store the databases, if the directory already contains databases these are made available. If no directory is given, one is created in the ApplicationData folder.</param>
+        public TinyVirtuoso(DirectoryInfo dataDir)
         {
-			if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
-				execName = "virtuoso-t";
-			else
-				execName = "virtuoso-t.exe";
-			
-            RootDir = GetRootDir(rootDir);
-            CurrentDir = GetCurrentDir();
-            TargetBinPath = GetTargetBinPath();
-
-            if (!CheckVirtuoso())
-                SetupVirtuoso();
-
-            InstanceCollectionDir = GetInstanceCollectionDir();
-            if (!InstanceCollectionDir.Exists)
-                InstanceCollectionDir.Create();
-            else
-                LoadExistingInstances();
-
-            _templateConfig = GetTemplateConfig();
+            Initialize(dataDir);
         }
 
         #endregion
 
         #region Methods
         #region Public Interface
-        public string GetConnectionString(string instanceName, string username, string password)
+        public string GetConnectionString(string instanceName, string username = "dba", string password = "dba")
         {
             Virtuoso v = _instances[instanceName];
 
@@ -115,7 +103,7 @@ namespace Semiodesk.TinyVirtuoso
             return string.Format("provider=virtuoso;host=localhost;port={0};uid={1};pw={2}", port, username, password);
         }
 
-        public string GetNativeConnectionString(string instanceName, string username, string password)
+        public string GetNativeConnectionString(string instanceName, string username = "dba", string password = "dba")
         {
             Virtuoso v = _instances[instanceName];
             int? port = PortUtils.GetPort(v.Configuration.Parameters.ServerPort);
@@ -184,24 +172,44 @@ namespace Semiodesk.TinyVirtuoso
 
         #region Private Methods
 
+        private void Initialize(DirectoryInfo dataDir)
+        {
+            if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
+                execName = "virtuoso-t";
+            else
+                execName = "virtuoso-t.exe";
+
+            DataDir = GetDataDir(dataDir);
+            CurrentDir = GetCurrentDir();
+            TargetBinPath = GetCurrentDir();
+
+            if (!CheckVirtuoso())
+                throw new FileNotFoundException(string.Format("Virtuoso binaries are missing. Check directory {0}", TargetBinPath.FullName));
+
+            InstanceCollectionDir = DataDir;
+            LoadExistingInstances();
+
+            _templateConfig = GetTemplateConfig();
+        }
+
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="rootDir"></param>
+        /// <param name="dataDir"></param>
         /// <returns></returns>
-        private DirectoryInfo GetRootDir(DirectoryInfo rootDir = null)
+        private DirectoryInfo GetDataDir(DirectoryInfo dataDir = null)
         {
-            if (rootDir == null)
+            if (dataDir == null)
             {
-                rootDir = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), "TinyVirtuoso"));
+                dataDir = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), "TinyVirtuoso"));
             }
 
-            if (!rootDir.Exists)
+            if (!dataDir.Exists)
             {
-                rootDir.Create();
+                dataDir.Create();
             }
 
-            return rootDir;
+            return dataDir;
         }
 
         private DirectoryInfo GetCurrentDir()
@@ -219,28 +227,6 @@ namespace Semiodesk.TinyVirtuoso
             if (!conf.Exists)
                 throw new FileNotFoundException("Database template file not found!", conf.FullName);
             return conf;
-        }
-
-        private DirectoryInfo GetTargetBinPath()
-        {
-            return new DirectoryInfo(Path.Combine(RootDir.FullName, "TinyVirtuoso"));
-        }
-
-        private DirectoryInfo GetInstanceCollectionDir()
-        {
-            var instanceCollectionDir = new DirectoryInfo(Path.Combine(RootDir.FullName, "databases"));
-            return instanceCollectionDir;
-        }
-
-        private void SetupVirtuoso()
-        {
-            DirectoryInfo sourcePath = CurrentDir;
-
-            if (TargetBinPath.Exists)
-                TargetBinPath.Delete(true);
-
-            DirectoryUtils.DirectoryCopy(sourcePath.FullName, TargetBinPath.FullName, true);
-            CheckVirtuoso();
         }
 
         private bool CheckVirtuoso()
