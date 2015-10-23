@@ -25,7 +25,7 @@ This means you can use it for every project you like, even commercial ones, as l
 The source code, documentation and issue tracking can be found at our `bitbucket page`_. 
 If you like what we are doing and want to support us, please consider donating.
 
-The `OpenLink Virtuoso`_ database is released under the terms of the GPL (see TinyVirtuoso\Virtuoso\doc\LICENSE).
+The `OpenLink Virtuoso`_ database is released under the terms of the GPL (see TinyVirtuoso/Virtuoso/doc/LICENSE).
 TinyVirtuoso does not link against OpenLink Virtuoso in any way. It just provides a way to start, stop and configure the software.
 To download the source code of this software, check out the git repository at https://github.com/openlink/virtuoso-opensource/
 
