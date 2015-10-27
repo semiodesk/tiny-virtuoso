@@ -92,17 +92,25 @@ namespace Semiodesk.TinyVirtuoso
             _config.Locked = true;
             if (_starter == null)
             {
+
                 int? port = PortUtils.GetPort(_config.Parameters.ServerPort);
                 if (!port.HasValue)
                     throw new ArgumentException("No valid port given.");
 
+                string param = "";
                 if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
+                {
                     _starter = new NativeVirtuosoStarter(workingDir: _configFile.Directory);
+                    param = string.Format("-f -c \"{0}\"", _configFile.FullName);
+                }
                 else
+                {
                     _starter = new Win32VirtuosoStarter(port.Value, _binary.Directory, _configFile.Directory);
+                    param = string.Format("-f -c \"{0}\"", _configFile.FullName);
+                }
 
                 _starter.Executable = _binary.FullName;
-                _starter.Parameter = string.Format("-f -c {0}", _configFile.FullName);
+                _starter.Parameter = param;
                 res = _starter.Start(waitOnStartup, timeout);
             }
             return res;

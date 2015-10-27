@@ -38,10 +38,7 @@ namespace Semiodesk.TinyVirtuoso.Utils
     {
         public static bool TestPort(int port)
         {
-			if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
-				return TryConnect(port);
-			else
-				return SearchPort(port);
+            return TryConnect(port);			
         }
 
 		public static bool SearchPort(int port)
