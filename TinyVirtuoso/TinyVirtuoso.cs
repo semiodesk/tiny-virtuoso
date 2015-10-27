@@ -76,8 +76,12 @@ namespace Semiodesk.TinyVirtuoso
 
         #region Constructor
 
-        public TinyVirtuoso(string dataDirName)
+        public TinyVirtuoso(string dataDirName, string deploymentDir = null)
         {
+            DirectoryInfo deployDir = null;
+            if (!string.IsNullOrEmpty(deploymentDir))
+                deployDir = new DirectoryInfo(deploymentDir);
+
             Initialize(new DirectoryInfo(dataDirName));
         }
 
@@ -85,7 +89,7 @@ namespace Semiodesk.TinyVirtuoso
         /// Creates a new TinyVirtuoso.
         /// </summary>
         /// <param name="dataDir">Tells TinyVirtuoso where to store the databases, if the directory already contains databases these are made available. If no directory is given, one is created in the ApplicationData folder.</param>
-        public TinyVirtuoso(DirectoryInfo dataDir)
+        public TinyVirtuoso(DirectoryInfo dataDir, DirectoryInfo deploymentDir = null)
         {
             Initialize(dataDir);
         }
@@ -172,16 +176,27 @@ namespace Semiodesk.TinyVirtuoso
 
         #region Private Methods
 
-        private void Initialize(DirectoryInfo dataDir)
+        private void Initialize(DirectoryInfo dataDir, DirectoryInfo deployDir = null)
         {
             if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
                 execName = "virtuoso-t";
             else
                 execName = "virtuoso-t.exe";
 
+
             DataDir = GetDataDir(dataDir);
-            CurrentDir = GetCurrentDir();
-            TargetBinPath = GetCurrentDir();
+
+            if (deployDir == null)
+            {
+                CurrentDir = GetCurrentDir();
+                TargetBinPath = GetCurrentDir();
+            }else
+            {
+                CurrentDir = GetDeployDir(deployDir);
+                TargetBinPath = GetDeployDir(deployDir);
+            }
+            if (!CurrentDir.Exists)
+                throw new DirectoryNotFoundException(string.Format("TinyVirtuoso directory not found. {0}", CurrentDir.FullName));
 
             if (!CheckVirtuoso())
                 throw new FileNotFoundException(string.Format("Virtuoso binaries are missing. Check directory {0}", TargetBinPath.FullName));
@@ -217,6 +232,11 @@ namespace Semiodesk.TinyVirtuoso
             Uri u = new Uri(Assembly.GetExecutingAssembly().CodeBase);
             FileInfo asm = new FileInfo(u.LocalPath);
             return new DirectoryInfo(Path.Combine(asm.Directory.FullName, "TinyVirtuoso"));
+        }
+
+        private DirectoryInfo GetDeployDir(DirectoryInfo deploymentDir)
+        {
+            return new DirectoryInfo(Path.Combine(deploymentDir.FullName, "TinyVirtuoso"));
         }
 
         private FileInfo GetTemplateConfig()
