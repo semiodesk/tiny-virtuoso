@@ -38,7 +38,7 @@ namespace TinyVirtuosoTest
             DirectoryInfo targetDir = new DirectoryInfo("Data");
             //if (targetDir.Exists)
                 //targetDir.Delete(true);
-
+            //DirectoryInfo deployDir = new DirectoryInfo("C:\\Projects\\Unity3d\\example1\\TinyVirtuoso Example\\Output\\win\\game_Data\\StreamingAssets");
             TinyVirtuoso t = new TinyVirtuoso(targetDir);
 
             string instanceName = "Test";
@@ -46,8 +46,8 @@ namespace TinyVirtuosoTest
             Virtuoso virt = t.GetOrCreateInstance(instanceName);
             virt.Start();
 
-
             t.Stop(instanceName);
+
 
         }
 
