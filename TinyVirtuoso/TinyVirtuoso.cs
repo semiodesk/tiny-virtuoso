@@ -82,7 +82,7 @@ namespace Semiodesk.TinyVirtuoso
             if (!string.IsNullOrEmpty(deploymentDir))
                 deployDir = new DirectoryInfo(deploymentDir);
 
-            Initialize(new DirectoryInfo(dataDirName));
+            Initialize(new DirectoryInfo(dataDirName), deployDir);
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Semiodesk.TinyVirtuoso
         /// <param name="dataDir">Tells TinyVirtuoso where to store the databases, if the directory already contains databases these are made available. If no directory is given, one is created in the ApplicationData folder.</param>
         public TinyVirtuoso(DirectoryInfo dataDir, DirectoryInfo deploymentDir = null)
         {
-            Initialize(dataDir);
+            Initialize(dataDir, deploymentDir);
         }
 
         #endregion
