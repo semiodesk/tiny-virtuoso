@@ -7,12 +7,12 @@ namespace Semiodesk
 	[TestFixture]
 	public class PortTest
 	{
-		[Test]
+		//[Test]
 		public void PortTest1()
 		{
 			
-			IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
-			var tcpConnInfoArray = ipGlobalProperties.GetActiveTcpListeners();
+			//IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
+			//var tcpConnInfoArray = ipGlobalProperties.GetActiveTcpListeners();
 
 
 

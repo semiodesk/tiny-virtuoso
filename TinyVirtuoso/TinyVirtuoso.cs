@@ -69,15 +69,17 @@ namespace Semiodesk.TinyVirtuoso
 
 		string execName;
 
-        Random _rnd = new Random(DateTime.Now.Millisecond);
 
         public DirectoryInfo TargetBinPath { get; private set; }
+
+        public bool AutoPorts { get; private set; }
         #endregion
 
         #region Constructor
 
-        public TinyVirtuoso(string dataDirName, string deploymentDir = null)
+        public TinyVirtuoso(string dataDirName, string deploymentDir = null, bool autoPorts = true)
         {
+            AutoPorts = autoPorts;
             DirectoryInfo deployDir = null;
             if (!string.IsNullOrEmpty(deploymentDir))
                 deployDir = new DirectoryInfo(deploymentDir);
@@ -89,8 +91,9 @@ namespace Semiodesk.TinyVirtuoso
         /// Creates a new TinyVirtuoso.
         /// </summary>
         /// <param name="dataDir">Tells TinyVirtuoso where to store the databases, if the directory already contains databases these are made available. If no directory is given, one is created in the ApplicationData folder.</param>
-        public TinyVirtuoso(DirectoryInfo dataDir, DirectoryInfo deploymentDir = null)
+        public TinyVirtuoso(DirectoryInfo dataDir, DirectoryInfo deploymentDir = null, bool autoPorts = true)
         {
+            AutoPorts = autoPorts;
             Initialize(dataDir, deploymentDir);
         }
 
@@ -145,7 +148,7 @@ namespace Semiodesk.TinyVirtuoso
         public Virtuoso CreateInstance(string instanceName)
         {
             DirectoryInfo databaseDir = new DirectoryInfo(Path.Combine(InstanceCollectionDir.FullName, instanceName));
-            if (databaseDir.Exists)
+            if (IsInstance(databaseDir))
                 throw new ArgumentException(string.Format("A database with the given name {0} exists already.", instanceName));
 
             databaseDir.Create();
@@ -274,8 +277,17 @@ namespace Semiodesk.TinyVirtuoso
         {
             foreach (var db in InstanceCollectionDir.GetDirectories())
             {
-                InitInstance(db);
+                if (IsInstance(db))
+                {
+                    InitInstance(db);
+                }
             }
+        }
+
+        private bool IsInstance(DirectoryInfo instanceDir)
+        {
+            FileInfo targetConfig = new FileInfo(Path.Combine(instanceDir.FullName, "virtuoso.ini"));
+            return targetConfig.Exists;
         }
 
         private Virtuoso InitInstance(DirectoryInfo instanceDir)
@@ -283,15 +295,8 @@ namespace Semiodesk.TinyVirtuoso
             string dbName = instanceDir.Name;
             FileInfo targetConfig = new FileInfo(Path.Combine(instanceDir.FullName, "virtuoso.ini"));
 
-            Virtuoso virt = new Virtuoso(_executable, targetConfig);
+            Virtuoso virt = new Virtuoso(_executable, targetConfig, AutoPorts);
             virt.EnvironmentDir = TargetBinPath;
-            int port;
-            do
-            {
-                port = 35000 + _rnd.Next(10, 60);
-            } while (!PortUtils.TestPort(port));
-
-            virt.Configuration.Parameters.ServerPort = string.Format("localhost:{0}", port);
             virt.Configuration.SaveConfigFile();
 
             virt.EnvironmentDir = TargetBinPath;

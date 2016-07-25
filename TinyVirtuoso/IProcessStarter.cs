@@ -36,13 +36,14 @@ namespace Semiodesk.VirtuosoInstrumentation
     /// <summary>
     /// Start a process independent from the target platform
     /// </summary>
-    public interface IProcessStarter
+    public interface IProcessStarter: IDisposable
     {
         #region Members
         string Executable { get; set; }
         string Parameter { get; set; }
         bool ProcessRunning { get; }
         bool Started { get; }
+        int Port { get; }
         #endregion
 
         #region Methods
