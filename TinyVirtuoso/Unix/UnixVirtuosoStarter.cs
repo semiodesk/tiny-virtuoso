@@ -32,13 +32,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Semiodesk.TinyVirtuoso.Utils;
 
 namespace Semiodesk.VirtuosoInstrumentation
 {
     /// <summary>
     /// 
     /// </summary>
-    class NativeVirtuosoStarter : IProcessStarter
+    class UnixVirtuosoStarter : IProcessStarter
     {
         #region Members
 
@@ -76,21 +77,36 @@ namespace Semiodesk.VirtuosoInstrumentation
             }
         }
 
+        public int Port
+        {
+            get;
+            set;
+        }
+
         public DirectoryInfo _binDir;
         public DirectoryInfo _workingDir;
+
+
 
         #endregion
 
         #region Constructor
-        public NativeVirtuosoStarter(DirectoryInfo binDir = null, DirectoryInfo workingDir = null)
+        public UnixVirtuosoStarter(int port, DirectoryInfo binDir = null, DirectoryInfo workingDir = null)
         {
+            Port = port;
             _process = new Process();
 
             _binDir = binDir;
             _workingDir = workingDir;
+            _serverStartOccured = false;
             
         }
         #endregion
+
+        ~UnixVirtuosoStarter()
+        {
+            Dispose(false);
+        }
 
         #region Methods
 
@@ -98,9 +114,9 @@ namespace Semiodesk.VirtuosoInstrumentation
         {
             SetExecutable();
 
-            _process.StartInfo.FileName = Executable;
+            _process.StartInfo.FileName = "sh";
             _process.StartInfo.WorkingDirectory = _workingDir.FullName;
-            _process.StartInfo.Arguments = Parameter;
+            _process.StartInfo.Arguments = string.Format(" -c 'set -o monitor; trap \"kill %1\" SIGINT SIGTERM; {0} {1} & read dummy; kill %1'", Executable, Parameter);
             _process.StartInfo.RedirectStandardOutput = true;
             _process.StartInfo.RedirectStandardInput = true;
             _process.StartInfo.RedirectStandardError = true;
@@ -110,10 +126,10 @@ namespace Semiodesk.VirtuosoInstrumentation
 
             //_process.OutputDataReceived += _process_OutputDataReceived;
             _process.Start();
-
             //_process.BeginOutputReadLine();
             _process.BeginErrorReadLine();
 
+            //StartWatchdog(_process.Id, _binDir);
             if (waitOnStartup)
             {
                 double time = 0;
@@ -126,7 +142,9 @@ namespace Semiodesk.VirtuosoInstrumentation
                     {
                         time -= 10;
                         if (time <= 0)
+                        {
                             break;
+                        }
                     }
                 }
             }
@@ -137,6 +155,7 @@ namespace Semiodesk.VirtuosoInstrumentation
         void _process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
             string error = e.Data;
+            Console.WriteLine(error);
             if (!_serverStartOccured && !string.IsNullOrEmpty(error))
             {
                 if (error.Contains("Server online at"))
@@ -147,6 +166,9 @@ namespace Semiodesk.VirtuosoInstrumentation
         void _process_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
             string res = e.Data;
+            if (res.Contains(Port.ToString()))
+                _serverStartOccured = true;
+            Console.WriteLine(res);
         }
 
         public bool Stop(bool force = false)
@@ -164,7 +186,7 @@ namespace Semiodesk.VirtuosoInstrumentation
                     }
                     catch (InvalidOperationException)
                     {
-                        res= false;
+                        res = false;
                     }
                 }
 
@@ -193,6 +215,19 @@ namespace Semiodesk.VirtuosoInstrumentation
             proc.StartInfo.Arguments = string.Format("+x {0}", Executable);
             proc.Start();
             proc.WaitForExit();
+        }
+
+        protected void Dispose(bool fromDispose)
+        {
+            if (ProcessRunning)
+                Stop(true);
+            _process.Dispose();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         #endregion

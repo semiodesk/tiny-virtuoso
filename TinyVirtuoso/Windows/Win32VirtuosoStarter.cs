@@ -77,10 +77,9 @@ namespace Semiodesk.VirtuosoInstrumentation.Windows
             }
         }
 
-        private IntPtr _stdErrHandle;
+        public int Port { get; set; }
+         
         private Job _job;
-        SafeFileHandle safeHandle;
-        private StreamReader _standardError;
         private int _targetPort;
         private DirectoryInfo _binDir;
         private DirectoryInfo _workingDir;
@@ -89,11 +88,16 @@ namespace Semiodesk.VirtuosoInstrumentation.Windows
         #region Constructor
         public Win32VirtuosoStarter(int targetPort, DirectoryInfo binDir = null, DirectoryInfo workingDir = null)
         {
-            _targetPort = targetPort;
+            Port = targetPort;
             _binDir = binDir;
             _workingDir = workingDir;
         }
         #endregion
+
+        ~Win32VirtuosoStarter()
+        {
+            Dispose(false);
+        }
 
         #region Methods
 
@@ -124,7 +128,7 @@ namespace Semiodesk.VirtuosoInstrumentation.Windows
                     time = timeout.Value.TotalMilliseconds;
                 while (!_serverStartOccured)
                 {
-                    _serverStartOccured = !PortUtils.TestPort(_targetPort);
+                    _serverStartOccured = !PortUtils.IsPortFree(Port);
                     if (!_serverStartOccured)
                     {
                         Thread.Sleep(10);
@@ -157,7 +161,7 @@ namespace Semiodesk.VirtuosoInstrumentation.Windows
                     {
                         _process.Kill();
                     }
-                    catch (InvalidOperationException e)
+                    catch (InvalidOperationException)
                     {
                         res= false;
                     }
@@ -165,6 +169,19 @@ namespace Semiodesk.VirtuosoInstrumentation.Windows
             }
             return res;
         }
+
+
+        protected void Dispose(bool fromDispose)
+        {
+            _process.Dispose();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
 
         #endregion
     }

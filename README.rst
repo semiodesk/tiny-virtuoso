@@ -4,6 +4,7 @@ Overview
 Semiodesk.TinyVirtuoso is a tool to create small and self sustained instances of the OpenLink Virtuoso database.
 This package is intended to lower the entry barrier for developers to try out Semantic Web technologies.
 The goals are:
+
 - Easy setup, just add a nuget package
 - Simple first steps, a few short lines of code should be enough to get database up and running
 - Easy to use, with a focus on `Semiodesk Trinity`_, makes the development of Semantic Web applications faster
@@ -63,5 +64,5 @@ If you need help, contact us under `hello@semiodesk.com`_.
 .. _`Semiodesk`: http://www.semiodesk.com
 .. _`OpenLink Virtuoso`: https://github.com/openlink/virtuoso-opensource
 .. _`First Steps`: https://bitbucket.org/semiodesk/tinyvirtuoso/wiki/FirstSteps
-.. _`contact us`:mailto:hello@semiodesk.com
-.. _`hello@semiodesk.com`:mailto:hello@semiodesk.com
+.. _`contact us`: mailto:hello@semiodesk.com
+.. _`hello@semiodesk.com`: mailto:hello@semiodesk.com

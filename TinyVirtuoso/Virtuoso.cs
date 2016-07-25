@@ -63,10 +63,17 @@ namespace Semiodesk.TinyVirtuoso
         {
             get
             {
-                return _starter.ProcessRunning;
+                if (_starter != null)
+                    return _starter.ProcessRunning;
+                else
+                    return false;
             }
             
         }
+
+        Random _rnd = new Random(DateTime.Now.Millisecond);
+
+        public bool AutoPort { get; private set; }
 
         public VirtuosoConfig Configuration { get { return _config; } }
 
@@ -74,8 +81,9 @@ namespace Semiodesk.TinyVirtuoso
         #endregion
 
         #region Constructor
-        public Virtuoso(FileInfo binary, FileInfo config)
+        public Virtuoso(FileInfo binary, FileInfo config, bool autoPort)
         {
+            AutoPort = autoPort;
             _binary = binary;
             _configFile = config;
             _config = new VirtuosoConfig(_configFile);
@@ -89,18 +97,33 @@ namespace Semiodesk.TinyVirtuoso
         public bool Start(bool waitOnStartup = true, TimeSpan? timeout = null)
         {
             bool res = false;
-            _config.Locked = true;
+
             if (_starter == null)
             {
+                int? port;
+                if (AutoPort)
+                {
 
-                int? port = PortUtils.GetPort(_config.Parameters.ServerPort);
-                if (!port.HasValue)
-                    throw new ArgumentException("No valid port given.");
+                    do
+                    {
+                        port = 35000 + _rnd.Next(10, 60);
+                    } while (!PortUtils.TestPort(port.Value));
+                    Configuration.Parameters.ServerPort = string.Format("localhost:{0}", port.Value);
+                    Configuration.SaveConfigFile();
+                }
+                else 
+                {
+                    port = PortUtils.GetPort(_config.Parameters.ServerPort);
+                    if (!port.HasValue)
+                        throw new ArgumentException("No valid port given.");
+                }
+
+                _config.Locked = true;
 
                 string param = "";
                 if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
                 {
-                    _starter = new NativeVirtuosoStarter(workingDir: _configFile.Directory);
+                    _starter = new UnixVirtuosoStarter(port.Value, _binary.Directory, _configFile.Directory);
                     param = string.Format("-f -c \"{0}\"", _configFile.FullName);
                 }
                 else
