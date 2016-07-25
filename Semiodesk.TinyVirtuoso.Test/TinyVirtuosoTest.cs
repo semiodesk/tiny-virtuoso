@@ -44,7 +44,8 @@ namespace TinyVirtuosoTest
             string instanceName = "Test";
 
             Virtuoso virt = t.GetOrCreateInstance(instanceName);
-            virt.Start();
+            virt.Start(true, TimeSpan.FromSeconds(30));
+            Assert.IsTrue(virt.IsOnline);
             Console.WriteLine("Started...");
             Console.WriteLine("..Waiting...");
             Thread.Sleep(TimeSpan.FromSeconds(10));

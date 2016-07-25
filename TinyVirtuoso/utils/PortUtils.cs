@@ -38,7 +38,7 @@ namespace Semiodesk.TinyVirtuoso.Utils
     {
         public static bool TestPort(int port)
         {
-            return TryConnect(port);			
+            return IsPortFree(port);			
         }
 
 		public static bool SearchPort(int port)
@@ -56,14 +56,17 @@ namespace Semiodesk.TinyVirtuoso.Utils
 			return true;
 		}
 
-		public static bool TryConnect(int port)
+		public static bool IsPortFree(int port)
 		{
 			bool result = false;
 			try
 			{
-				Socket socket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-				socket.Connect(new System.Net.IPAddress(new byte[] {127, 0, 0, 1}), port);
-				socket.Close();
+                TcpClient cl = new TcpClient();
+                IAsyncResult r = cl.BeginConnect("127.0.0.1", port, null, null);
+                r.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(10), true);
+                result = !cl.Connected;
+                cl.Close();
+
 			}catch(SocketException ex) 
 			{
 				if (ex.ErrorCode == 10061)

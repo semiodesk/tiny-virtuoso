@@ -97,7 +97,7 @@ namespace Semiodesk.TinyVirtuoso
         public bool Start(bool waitOnStartup = true, TimeSpan? timeout = null)
         {
             bool res = false;
-            _config.Locked = true;
+
             if (_starter == null)
             {
                 int? port;
@@ -108,7 +108,7 @@ namespace Semiodesk.TinyVirtuoso
                     {
                         port = 35000 + _rnd.Next(10, 60);
                     } while (!PortUtils.TestPort(port.Value));
-                    Configuration.Parameters.ServerPort = string.Format("localhost:{0}", port);
+                    Configuration.Parameters.ServerPort = string.Format("localhost:{0}", port.Value);
                     Configuration.SaveConfigFile();
                 }
                 else 
@@ -117,6 +117,8 @@ namespace Semiodesk.TinyVirtuoso
                     if (!port.HasValue)
                         throw new ArgumentException("No valid port given.");
                 }
+
+                _config.Locked = true;
 
                 string param = "";
                 if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
