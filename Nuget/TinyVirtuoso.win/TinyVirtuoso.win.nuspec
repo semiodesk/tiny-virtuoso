@@ -3,7 +3,7 @@
   <metadata>
     <id>TinyVirtuoso.win</id>
 	<title>TinyVirtuoso Windows</title>
-	<version>7.2.0</version>
+	<version>7.2.1</version>
     <authors>Semiodesk</authors>
     <owners>Semiodesk</owners>
 	<licenseUrl>https://bitbucket.org/semiodesk/tinyvirtuoso/wiki/VirtuosoLicense</licenseUrl>
@@ -14,7 +14,7 @@
 	<summary>TinyVirtuoso offers a way to deploy OpenLink's Virtuoso database as a small package that can be started on demand. This package contains the Windows binaries of Virtuoso.</summary>
     <releaseNotes>Initial release.</releaseNotes>
     <copyright>Copyright 2015 Semiodesk</copyright>
-    <tags>RDF SPARQL Database Semantic Web Graph OpenLink Virtuoso</tags>
+    <tags>RDF SPARQL Graph Database Semantic Web OpenLink Virtuoso</tags>
     <dependencies>
       <dependency id="TinyVirtuoso" />
     </dependencies>
