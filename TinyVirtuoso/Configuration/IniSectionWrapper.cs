@@ -49,6 +49,12 @@ namespace Semiodesk.VirtuosoInstrumentation.Configuration
         #endregion
 
         #region Methods
+
+        protected void HandleLockedState(string entry)
+        {
+            throw new Exception(string.Format("Tried to manipulate entry {0} in virtuoso configuration but it is locked.", entry));
+        }
+
         protected string GetStringData(string key)
         {
             KeyData d = _sectionData.Keys.Where(x => x.KeyName == key).FirstOrDefault();
@@ -134,7 +140,9 @@ namespace Semiodesk.VirtuosoInstrumentation.Configuration
         protected void SetStringData(string key, string value)
         {
             if (Locked)
-                return;
+            {
+                HandleLockedState(key);
+            }
 
             if (ContainsKey(key))
             {
@@ -151,7 +159,9 @@ namespace Semiodesk.VirtuosoInstrumentation.Configuration
         protected void SetStringListData(string key, IEnumerable<string> value)
         {
             if (Locked)
-                return;
+            {
+                HandleLockedState(key);
+            }
 
             if (value != null)
             {
@@ -166,7 +176,9 @@ namespace Semiodesk.VirtuosoInstrumentation.Configuration
         protected void SetBoolData(string key, bool? value)
         {
             if (Locked)
-                return;
+            {
+                HandleLockedState(key);
+            }
 
             if (value.HasValue)
             {
@@ -185,7 +197,9 @@ namespace Semiodesk.VirtuosoInstrumentation.Configuration
         protected void SetIntData(string key, int? value)
         {
             if (Locked)
-                return;
+            {
+                HandleLockedState(key);
+            }
              
             if (value.HasValue)
             {
@@ -200,7 +214,9 @@ namespace Semiodesk.VirtuosoInstrumentation.Configuration
         protected void SetFloatData(string key, float? value)
         {
             if (Locked)
-                return;
+            {
+                HandleLockedState(key);
+            }
 
             if (value.HasValue)
             {
@@ -215,7 +231,9 @@ namespace Semiodesk.VirtuosoInstrumentation.Configuration
         protected void SetTimespanData(string key, TimeSpan? value)
         {
             if (Locked)
-                return;
+            {
+                HandleLockedState(key);
+            }
 
             if (value.HasValue)
             {

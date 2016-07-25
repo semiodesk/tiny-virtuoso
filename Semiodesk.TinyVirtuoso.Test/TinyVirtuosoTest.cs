@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 using Semiodesk.TinyVirtuoso;
 using System.Reflection;
 using System.IO;
-
+using System.Threading;
 
 namespace TinyVirtuosoTest
 {
     [TestFixture]
     public class Test
     {
-        [Test]
+        //[Test]
         public void TinyTest()
         {
-            Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, "blub");
+            //Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, "blub");
             TinyVirtuoso t = new TinyVirtuoso("Data");
 
             string instanceName = "Test";
@@ -44,10 +44,14 @@ namespace TinyVirtuosoTest
             string instanceName = "Test";
 
             Virtuoso virt = t.GetOrCreateInstance(instanceName);
-            virt.Start();
-
+            virt.Start(true, TimeSpan.FromSeconds(30));
+            Assert.IsTrue(virt.IsOnline);
+            Console.WriteLine("Started...");
+            Console.WriteLine("..Waiting...");
+            Thread.Sleep(TimeSpan.FromSeconds(10));
+            Console.WriteLine("Trying to stop");
             t.Stop(instanceName);
-
+            Console.WriteLine("Stopped");
 
         }
 
