@@ -63,7 +63,10 @@ namespace Semiodesk.TinyVirtuoso
         {
             get
             {
-                return _starter.ProcessRunning;
+                if (_starter != null)
+                    return _starter.ProcessRunning;
+                else
+                    return false;
             }
             
         }
