@@ -68,14 +68,19 @@ namespace Semiodesk.TinyVirtuoso
             
         }
 
+        Random _rnd = new Random(DateTime.Now.Millisecond);
+
+        public bool AutoPort { get; private set; }
+
         public VirtuosoConfig Configuration { get { return _config; } }
 
         public DirectoryInfo DataDirectory { get { return _configFile.Directory; } }
         #endregion
 
         #region Constructor
-        public Virtuoso(FileInfo binary, FileInfo config)
+        public Virtuoso(FileInfo binary, FileInfo config, bool autoPort)
         {
+            AutoPort = autoPort;
             _binary = binary;
             _configFile = config;
             _config = new VirtuosoConfig(_configFile);
@@ -92,15 +97,28 @@ namespace Semiodesk.TinyVirtuoso
             _config.Locked = true;
             if (_starter == null)
             {
+                int? port;
+                if (AutoPort)
+                {
 
-                int? port = PortUtils.GetPort(_config.Parameters.ServerPort);
-                if (!port.HasValue)
-                    throw new ArgumentException("No valid port given.");
+                    do
+                    {
+                        port = 35000 + _rnd.Next(10, 60);
+                    } while (!PortUtils.TestPort(port.Value));
+                    Configuration.Parameters.ServerPort = string.Format("localhost:{0}", port);
+                    Configuration.SaveConfigFile();
+                }
+                else 
+                {
+                    port = PortUtils.GetPort(_config.Parameters.ServerPort);
+                    if (!port.HasValue)
+                        throw new ArgumentException("No valid port given.");
+                }
 
                 string param = "";
                 if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
                 {
-                    _starter = new NativeVirtuosoStarter(workingDir: _configFile.Directory);
+                    _starter = new UnixVirtuosoStarter(port.Value, _binary.Directory, _configFile.Directory);
                     param = string.Format("-f -c \"{0}\"", _configFile.FullName);
                 }
                 else
