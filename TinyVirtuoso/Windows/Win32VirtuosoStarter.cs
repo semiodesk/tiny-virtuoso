@@ -128,7 +128,7 @@ namespace Semiodesk.VirtuosoInstrumentation.Windows
                     time = timeout.Value.TotalMilliseconds;
                 while (!_serverStartOccured)
                 {
-                    _serverStartOccured = !PortUtils.TestPort(Port);
+                    _serverStartOccured = !PortUtils.IsPortFree(Port);
                     if (!_serverStartOccured)
                     {
                         Thread.Sleep(10);
